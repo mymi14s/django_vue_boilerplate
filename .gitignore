@@ -1,0 +1,23 @@
+.DS_Store
+.env
+*.pyc
+*.egg-info
+*.swp
+*/db.sqlite3
+*/.env
+*/__pycache__
+brigantes/.env
+brigantes/db.sqlite3
+brigantes/brigantes/db.sqlite3
+tags
+node_modules/
+dist/
+__pycache__/
+
+# build/
+.vscode
+.vs
+node_modules
+*debug.log
+frontend/dist
+frontend/node_modules

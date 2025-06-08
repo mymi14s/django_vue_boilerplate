@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@coreui/coreui": "^5.4.0",
+    "bootstrap": "^5.3.6"
+  }
+}

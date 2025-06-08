@@ -1,0 +1,6 @@
+python-dotenv
+django-allauth
+mysqlclient
+dj-database-url
+gunicorn
+uvicorn
