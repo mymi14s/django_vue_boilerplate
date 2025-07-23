@@ -36,3 +36,19 @@ services:
   # /opt/brigantes/static:
 
 
+# version: '3.8'
+
+# services:
+#   web:
+#     build: .
+#     ports:
+#       - "80:80"
+#     environment:
+#       - DEBUG=0
+#     volumes:
+#       - static_volume:/opt/staticfiles
+#     depends_on:
+#       - db  # if you have a database service
+
+# volumes:
+#   static_volume:

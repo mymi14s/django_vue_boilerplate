@@ -1,0 +1,19 @@
+docker build -t brigantes .      
+docker run -d \
+  --name brigantes \
+  -p 80:80 \
+  -e DJANGO_SECRET_KEY=efsdgewdgf \
+  -e DJANGO_SETTINGS_MODULE=brigantes.settings.prod \
+  -e DATABASE_URL=mysql://root:root@host.docker.internal:3306/brigantes \
+  brigantes \
+   python manage.py migrate --noinput --settings=brigantes.settings.prod
+
+
+
+docker run -d \
+  --name brigantes \
+  -p 80:80 \
+  -e DJANGO_SECRET_KEY=efsdgewdgf \
+  -e DJANGO_SETTINGS_MODULE=brigantes.settings.prod \
+  -e DATABASE_URL=mysql://root:root@host.docker.internal:3306/brigantes \
+  brigantes

@@ -160,18 +160,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-STATICFILES_DIRS = [STATIC_DIR,]
-MEDIA_ROOT = MEDIA_DIR
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-# Optional for WhiteNoise if you're not using it in prod
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

@@ -127,14 +127,14 @@ export default {
   <div class="wrapper min-vh-100 d-flex flex-row align-items-center">
     <CContainer>
       <CRow class="justify-content-center">
-        <CCol :md="8">
+        <CCol :md="6" :lg="4">
           <CCardGroup>
             <CCard class="p-4">
               <CCardBody>
                 <CForm class="form-horizontal" @submit.prevent="login">
-                  <div class="text-center">
-                  <h1>Login</h1>
-                  <p class="text-body-secondary">Sign In to your account</p>
+                  <div class="text-center mb-4">
+                    <h2>Login</h2>
+                    <p class="text-body-secondary small mb-0">Sign In to your account</p>
                   </div>
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
@@ -146,9 +146,11 @@ export default {
                       v-model="email"
                       type="email"
                       required
+                      size="sm"
+                      @keydown.enter="login"
                     />
                   </CInputGroup>
-                  <CInputGroup class="mb-4">
+                  <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-lock-locked" />
                     </CInputGroupText>
@@ -157,14 +159,18 @@ export default {
                       placeholder="Password"
                       autocomplete="current-password"
                       v-model="password"
+                      size="sm"
+                      @keydown.enter="login"
                     />
                   </CInputGroup>
-                  <CRow>
+                  <CRow class="align-items-center">
                     <CCol :xs="6">
-                      <CButton color="primary" class="px-4"  @click="login"> Login </CButton>
+                      <CButton color="primary" class="px-3 py-2" size="sm" @click="login"> 
+                        Login 
+                      </CButton>
                     </CCol>
                     <CCol :xs="6" class="text-right">
-                      <CButton color="link" class="px-0">
+                      <CButton color="link" class="px-0 py-0" size="sm">
                         Forgot password?
                       </CButton>
                     </CCol>

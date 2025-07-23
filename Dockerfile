@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
 WORKDIR /opt
 
@@ -12,42 +12,49 @@ RUN apt-get update && apt-get install -y \
 
 # Install Python dependencies
 COPY requirements.txt .
+COPY requirements.txt /opt/requirements.txt
 RUN pip install --upgrade pip && pip install -r requirements.txt
 RUN pip install uvicorn[standard]
 
 # Copy application code
 COPY brigantes /opt
 
-
-# Start the server using uvicorn
-# CMD [ "python", "manage.py",  "migrate", "--settings=brigantes.settings.prod", \
-
-# CMD ["uvicorn", "brigantes.asgi:application", "--reload", "--host", "0.0.0.0"]
- 
 # Collect static files
-# RUN python manage.py collectstatic --noinput --settings=brigantes.settings.prod
+RUN python manage.py collectstatic --noinput --settings=brigantes.settings.prod
 
-# RUN DJANGO_SETTINGS_MODULE=brigantes.settings.prod gunicorn --bind 0.0.0.0:8000 brigantes.wsgi:application
-# RUN uvicorn brigantes.asgi:application --reload
+# Production stage
+FROM python:3.11-slim
 
+WORKDIR /opt
 
-# DJANGO_SECRET_KEY='sdftghjk'
-# DJANGO_SETTINGS_MODULE=brigantes.settings.prod
-# DJANGO_DATABASE_URL=mysql://root:root@0.0.0.0:3306/brigantes
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    default-libmysqlclient-dev \
+    build-essential \
+    pkg-config \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
 
-# docker run -d \
-#   --name brigantes_app \
-#   --network host \
-#   -e DJANGO_SECRET_KEY=efsdgewdgf \
-#   -e DJANGO_SETTINGS_MODULE=brigantes.settings.prod \
-#   -e DJANGO_DATABASE_URL=mysql://root:root@host.docker.internal:3306/brigantes \
-#   brigantes python manage.py migrate --noinput --settings=brigantes.settings.prod
+# Copy Python dependencies - this is the key fix
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /opt /opt
 
-# docker run -d \
-#   --name brigantes_app \
-#   --network host \
-#   -p 8000:8000 \
-#   -e DJANGO_SECRET_KEY=efsdgewdgf \
-#   -e DJANGO_SETTINGS_MODULE=brigantes.settings.prod \
-#   -e DJANGO_DATABASE_URL=mysql://root:root@host.docker.internal:3306/brigantes \
-#   brigantes python manage.py migrate --noinput --settings=brigantes.settings.prod
+# Copy static files
+COPY --from=builder /opt/static /opt/static
+
+# Configure Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN rm -f /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+RUN nginx -t
+
+# Make scripts executable
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/entrypoint.sh"]
+
