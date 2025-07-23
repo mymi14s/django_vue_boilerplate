@@ -1,25 +1,38 @@
+
 services:
   web:
-    build: .
-    command: gunicorn brigantes.wsgi:application --bind 0.0.0.0:8000 --env DJANGO_SETTINGS_MODULE=brigantes.settings.prod
+    build:
+      context: .
+      dockerfile: Dockerfile  # Optional if Dockerfile is at root
+    command: >
+      sh -c "
+      python manage.py migrate --noinput &&
+      uvicorn brigantes.asgi:application --host 0.0.0.0 --port 8000
+      "
     volumes:
-      - .:/app
-      - static_volume:/app/static
+      - /opt/brigantes/static:/opt/static
+      - /opt/brigantes/media:/opt/media
     environment:
-      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DJANGO_DATABASE_URL=${DJANGO_DATABASE_URL}
+      - DJANGO_SECRET_KEY=efsdgewdgf
+      - DJANGO_DATABASE_URL=mysql://root:root@host.docker.internal:3306/brigantes
+      - DJANGO_SETTINGS_MODULE=brigantes.settings.prod
     expose:
-      - "8000"  # Expose internal port for nginx to use
+      - "8000"
+
 
   nginx:
     image: nginx:stable
     ports:
       - "8009:80"
     volumes:
-      - static_volume:/app/static
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - /opt/brigantes/static:/app/static
+      - /opt/brigantes/media:/app/media
+      - /opt/brigantes/nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - web
 
-volumes:
-  static_volume:
+# volumes:
+  # /opt/brigantes/media:
+  # /opt/brigantes/static:
+
+

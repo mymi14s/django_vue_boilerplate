@@ -24,7 +24,6 @@ config = dotenv_values(".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-print(BASE_DIR)
 TEMPLATES_DIR = Path(BASE_DIR, 'templates')
 MEDIA_DIR = Path(BASE_DIR, 'media')
 STATIC_DIR = Path(BASE_DIR, 'static')
@@ -49,14 +48,39 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     # THIRD PART
+    'channels',
     'corsheaders',
     'allauth',
     'allauth.account',
+    'allauth.socialaccount',
+    # Django REST Framework
+    'rest_framework',
+    'rest_framework.authtoken',
+    # dj-rest-auth
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
     # CUSTOM APP
     'user_management',
     'frontend',
 ]
+
+SITE_ID = 1
+
+ASGI_APPLICATION = 'brigantes.asgi.application' # Points to your ASGI config
+
+# Channels Layer configuration (required for inter-process communication)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer', # Use Redis for production
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)], # Your Redis host and port
+        },
+    },
+}
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -70,7 +94,8 @@ MIDDLEWARE = [
     # Add the account middleware:
     "allauth.account.middleware.AccountMiddleware",
     # Custom middleware
-    "brigantes.middleware.Middleware"
+    "brigantes.middleware.Middleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -102,15 +127,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'brigantes.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv("DJANGO_DATABASE_URL")
-    )
-}
 
 
 # Password validation
@@ -153,6 +169,9 @@ STATICFILES_DIRS = [STATIC_DIR,]
 MEDIA_ROOT = MEDIA_DIR
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Optional for WhiteNoise if you're not using it in prod
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -180,3 +199,14 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://0.0.0.0:8000",
 ]
+
+
+# myproject/settings.py
+MQTT_SERVER = 'localhost' # Or your broker's address
+MQTT_PORT = 1883
+MQTT_KEEPALIVE = 60
+MQTT_USER = '' # If using authentication
+MQTT_PASSWORD = '' # If using authentication
+MQTT_TOPIC_SUBSCRIBE = 'django/mqtt/subscribe'
+MQTT_TOPIC_PUBLISH = 'django/mqtt/publish'
+

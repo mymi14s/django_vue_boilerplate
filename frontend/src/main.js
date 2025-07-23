@@ -22,6 +22,7 @@ import alertify from 'alertifyjs';
 
 import Brigantes from './utils/Brigantes';
 import Utils from './utils/Utils';
+import socket from './utils/Socket';
 
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
@@ -39,5 +40,6 @@ app.component('DocsIcons', DocsIcons)
 
 app.config.globalProperties.$brigantes = new Brigantes('/'); // global api call to django
 app.config.globalProperties.$validator = new Utils();
+app.config.globalProperties.$socket = socket;
 
 app.mount('#app')

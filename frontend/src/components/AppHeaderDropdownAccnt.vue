@@ -1,5 +1,9 @@
 <script setup>
+import { getCurrentInstance } from 'vue'
 import avatar from '@/assets/images/avatars/8.jpg'
+const socket = getCurrentInstance().appContext.config.globalProperties.$socket;
+const brigantes = getCurrentInstance().appContext.config.globalProperties.$brigantes;
+
 
 const itemsCount = 42
 </script>
@@ -50,7 +54,7 @@ const itemsCount = 42
       </CDropdownItem>
       <CDropdownDivider />
       <CDropdownItem> <CIcon icon="cil-shield-alt" /> Lock Account </CDropdownItem>
-      <CDropdownItem> <CIcon icon="cil-lock-locked" /> Logout </CDropdownItem>
+      <CDropdownItem @click="brigantes.logout()"> <CIcon icon="cil-lock-locked" /> Logout </CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
 </template>

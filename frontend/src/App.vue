@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeMount } from 'vue'
+import { getCurrentInstance, onMounted, ref, onBeforeMount } from 'vue'
 import { useColorModes } from '@coreui/vue'
 
 import { useThemeStore } from '@/stores/theme.js'
@@ -16,6 +16,27 @@ const { isColorModeSet, setColorMode } = useColorModes(
   'coreui-free-vue-admin-template-theme',
 )
 const currentTheme = useThemeStore()
+
+const socket = getCurrentInstance().appContext.config.globalProperties.$socket;
+const brigantes = getCurrentInstance().appContext.config.globalProperties.$brigantes;
+
+
+socket.on('connect', (data) => {
+  console.log('Received: Connected to the socket server', data);
+
+});
+
+socket.on('disconnect', () => {
+  console.log('desiconned to the socket server');
+  sendMessageToServer()
+});
+
+socket.on('sid-auth', (data) => {
+  let response = brigantes.set_sio_sid(data);
+  console.log('SIO SID set:', response, data);
+});
+
+
 
 onBeforeMount(() => {
   const urlParams = new URLSearchParams(window.location.href.split('?')[1])

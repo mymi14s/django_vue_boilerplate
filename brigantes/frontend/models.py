@@ -12,6 +12,10 @@ class Setting(models.Model):
     id = models.CharField(max_length=50, primary_key=True)
     site_name = models.CharField(max_length=50)
     site_title = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = "Site Setting"
+        verbose_name_plural = "Site Settings"
     
     def __str__(self):
         return self.id
@@ -37,3 +41,4 @@ class Setting(models.Model):
                     obj_dict[k] = ''
         
         return obj_dict
+    

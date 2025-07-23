@@ -21,3 +21,6 @@ node_modules
 *debug.log
 frontend/dist
 frontend/node_modules
+.env
+db.sqlite3
+*/db.sqlite3

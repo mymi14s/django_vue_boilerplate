@@ -39,9 +39,7 @@ export default {
   methods: {
     async login() {
       let data = await this.$brigantes.login(this.email, this.password);
-      sessionStorage.setItem('user', JSON.stringify(data.user));
-      sessionStorage.setItem('is_authenticated', data.is_authenticated ? 1 : '' );
-      if (data.is_authenticated){
+      if (data.token) {
         this.$router.push('/');
       }
     },
@@ -133,7 +131,7 @@ export default {
           <CCardGroup>
             <CCard class="p-4">
               <CCardBody>
-                <CForm>
+                <CForm class="form-horizontal" @submit.prevent="login">
                   <div class="text-center">
                   <h1>Login</h1>
                   <p class="text-body-secondary">Sign In to your account</p>

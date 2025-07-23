@@ -48,7 +48,7 @@ export default defineConfig(() => {
           chunkFileNames: 'assets/[name].js',
           assetFileNames: 'assets/[name].[ext]',
           manualChunks: {
-            // You can define custom chunk splitting here if needed
+            // define custom chunk splitting here if needed
           },
         },
       },

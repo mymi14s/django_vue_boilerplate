@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, onBeforeMount } from 'vue'
+import { getCurrentInstance, onMounted, ref, onBeforeMount } from 'vue'
 
 import { useRouter } from 'vue-router'
 
@@ -17,17 +17,40 @@ import WidgetsStatsD from './../widgets/WidgetsStatsTypeD.vue'
 const router = useRouter()
 
 
+const socket = getCurrentInstance().appContext.config.globalProperties.$socket;
+const brigantes = getCurrentInstance().appContext.config.globalProperties.$brigantes;
+
+socket.on('message', (data) => {
+  console.log('Received: 1', data);
+});
+
+socket.connect();
+
+
 onMounted(() => {
   try {
     const is_authenticated = sessionStorage.getItem('is_authenticated');
     if (!is_authenticated && !window.location.href.includes('/auth/login')){
       router.push('/auth/login')
     }
-    // users.value = response.data
+    
   } catch (error) {
     console.error('Failed to fetch users:', error)
   }
 })
+
+function testIO() {
+  let response = brigantes.api.get('/test');
+}
+
+function sendMessageToServer() {
+  if (socket && socket.connected) {
+    socket.emit("my_message", { content: message });
+    message = ""; // Clear input
+  } else {
+    console.warn("Socket not connected, cannot send message.");
+  }
+}
 
 
 const progressGroupExample1 = [
@@ -148,6 +171,20 @@ const tableExample = [
 
 <template>
   <div>
+    <CRow>
+      <CCol :md="12">
+        <CCard class="mb-4">
+          <CCardHeader>Dashboard</CCardHeader>
+          <CCardBody>
+            <p class="text-body-secondary small mb-0">
+              This is a simple example of a dashboard page. You can use this page to display
+              various statistics and information about your application.
+                <CButton color="primary" @click="testIO">Send Message</CButton>
+            </p>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
     <WidgetsStatsA class="mb-4" />
     <CRow>
       <CCol :md="12">
