@@ -1,14 +1,17 @@
 
-import time, socketio, json
+import time, socketio, json, asyncio
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.middleware.csrf import get_token
 from rest_framework import status
-from asgiref.sync import sync_to_async
-from brigantes.asgi import mqtt, sio, rds
-from brigantes.utils import async_fetch
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from asgiref.sync import sync_to_async, async_to_sync
+from studio_web_manager.asgi import mqtt, sio, rds
+from studio_web_manager.utils import async_fetch
 
 
 @sio.event
@@ -30,13 +33,13 @@ def get_csrf_token(request):
     return JsonResponse({'token': token}, status=status.HTTP_200_OK)
 
 
-async def test(request):
-    user = await sync_to_async(lambda: request.user.email)()
-    print(f"Is authenticated: {user}")
-    print(request.session.get('sio_sid', 'No SID found'), 'no')
-    await my_message({'msg': 'Welcome to the dashboard!'}, sid=request.session.get('sio_sid', None))
+
+@api_view(['POST', 'GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def test(request):
+    user = request.user.email
+    sio_sid = request.session.get('sio_sid', None)
+    async_to_sync(my_message)({'msg': 'Welcome to the dashboard!'}, sid=sio_sid)
+
     return JsonResponse({'user': user})
-
-    
-    
-
