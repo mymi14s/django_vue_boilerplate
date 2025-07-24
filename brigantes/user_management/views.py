@@ -3,9 +3,15 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout, get_backends
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from brigantes.exceptions import http_exception
+from studio_web_manager.exceptions import http_exception
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.response import Response
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
@@ -34,11 +40,13 @@ def user_login(request):
         return JsonResponse({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+@api_view(['POST', 'GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def sio_sid(request):
     try:
         data = json.loads(request.body)
         sid = data.get('sid')
-        print(request.user, sid)
 
         if not sid:
             return JsonResponse({"error": "SID must be supplied."}, status=status.HTTP_400_BAD_REQUEST)
