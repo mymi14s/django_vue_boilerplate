@@ -7,7 +7,7 @@ from django.urls import path
 import socketio, asyncio, redis
 from socketio import AsyncRedisManager
 from asgiref.sync import sync_to_async
-from brigantes.mqtt_client import MQTTClient
+from studio_web_manager.mqtt_client import MQTTClient
 
 # --- Load environment ---
 load_dotenv()
@@ -15,7 +15,7 @@ config = dotenv_values(".env")
 
 os.environ.setdefault(
     'DJANGO_SETTINGS_MODULE',
-    config.get("DJANGO_SETTINGS_MODULE") or 'brigantes.settings.prod'
+    config.get("DJANGO_SETTINGS_MODULE") or 'studio_web_manager.settings.prod'
 )
 
 # --- Django ASGI App ---
@@ -42,7 +42,6 @@ periodic_tasks = {}
 
 @sio.event
 async def connect(sid, environ, auth):
-    print(f"Client connected: {sid}")
     await sio.emit('sid-auth', sid, to=sid)
 
     # async def emit_every_5_seconds():
@@ -61,12 +60,10 @@ async def connect(sid, environ, auth):
 
 @sio.event
 async def disconnect(sid):
-    print(f"Client disconnected: {sid}")
     # Cancel the background task if it exists
     task = periodic_tasks.pop(sid, None)
     if task:
         task.cancel()
-        print(f"Client disconnected: {sid}")
 
 @sio.event
 async def my_message(sid, data):
